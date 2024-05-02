@@ -214,7 +214,7 @@ workflow {
   // profile function
   profile_function_n8(merged_reads, profile_taxa.out.to_profile_function_bugs)
   // profile function
-  process profile_function_localdb(merged_reads, profile_taxa.out.to_profile_function_bugs)
+  profile_function_localdb(merged_reads, profile_taxa.out.to_profile_function_bugs)
 
   // profile function
   profile_function_h37(merged_reads, profile_taxa.out.to_profile_function_bugs)
