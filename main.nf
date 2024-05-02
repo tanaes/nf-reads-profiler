@@ -204,45 +204,65 @@ workflow {
   profile_taxa(merged_reads)
 
   // profile function
-  profile_function(merged_reads, profile_taxa.out.to_profile_function_bugs)
+  profile_function_n1(merged_reads, profile_taxa.out.to_profile_function_bugs)
+  // profile function
+  profile_function_n7(merged_reads, profile_taxa.out.to_profile_function_bugs)
+
+  profile_function_uf90(merged_reads, profile_taxa.out.to_profile_function_bugs)
+
+  profile_function_h39(merged_reads, profile_taxa.out.to_profile_function_bugs)
+  // profile function
+  profile_function_n8(merged_reads, profile_taxa.out.to_profile_function_bugs)
+  // profile function
+  process profile_function_localdb(merged_reads, profile_taxa.out.to_profile_function_bugs)
+
+  // profile function
+  profile_function_h37(merged_reads, profile_taxa.out.to_profile_function_bugs)
+
+  // profile function
+  profile_function_h361(merged_reads, profile_taxa.out.to_profile_function_bugs)
+
+  // profile function
+  // profile_function_conda(merged_reads, profile_taxa.out.to_profile_function_bugs)
+
   // profile_taxa.out.view()
 
-  // regroup metadata
-  ch_genefamilies = profile_function.out.profile_function_gf
-              .map {
-                meta, table ->
-                    def meta_new = meta - meta.subMap('id')
-                meta_new.put('type','genefamilies')
-                [ meta_new, table ]
-              }
-              .groupTuple()
-  ch_pathabundance = profile_function.out.profile_function_pa
-              .map {
-                meta, table ->
-                    def meta_new = meta - meta.subMap('id')
-                meta_new.put('type','pathabundance')
-                [ meta_new, table ]
-              }
-              .groupTuple()
-  ch_pathcoverage = profile_function.out.profile_function_pc
-            .map {
-              meta, table ->
-                  def meta_new = meta - meta.subMap('id')
-              meta_new.put('type','pathcoverage')
-              [ meta_new, table ]
-            }
-            .groupTuple()
+  // // regroup metadata
+  // ch_genefamilies = profile_function.out.profile_function_gf
+  //             .map {
+  //               meta, table ->
+  //                   def meta_new = meta - meta.subMap('id')
+  //               meta_new.put('type','genefamilies')
+  //               [ meta_new, table ]
+  //             }
+  //             .groupTuple()
+  // ch_pathabundance = profile_function.out.profile_function_pa
+  //             .map {
+  //               meta, table ->
+  //                   def meta_new = meta - meta.subMap('id')
+  //               meta_new.put('type','pathabundance')
+  //               [ meta_new, table ]
+  //             }
+  //             .groupTuple()
+  // ch_pathcoverage = profile_function.out.profile_function_pc
+  //           .map {
+  //             meta, table ->
+  //                 def meta_new = meta - meta.subMap('id')
+  //             meta_new.put('type','pathcoverage')
+  //             [ meta_new, table ]
+  //           }
+  //           .groupTuple()
 
-  ch_metaphlan = profile_taxa.out.to_profile_function_bugs
-            .map {
-              meta, table ->
-                  def meta_new = meta - meta.subMap('id')
-              [ meta_new, table ]
-            }
-            .groupTuple()
+  // ch_metaphlan = profile_taxa.out.to_profile_function_bugs
+  //           .map {
+  //             meta, table ->
+  //                 def meta_new = meta - meta.subMap('id')
+  //             [ meta_new, table ]
+  //           }
+  //           .groupTuple()
 
-  combine_humann_tables(ch_genefamilies.mix(ch_pathcoverage, ch_pathabundance))
-  combine_metaphlan_tables(ch_metaphlan)
+  // combine_humann_tables(ch_genefamilies.mix(ch_pathcoverage, ch_pathabundance))
+  // combine_metaphlan_tables(ch_metaphlan)
 }
 
 /*

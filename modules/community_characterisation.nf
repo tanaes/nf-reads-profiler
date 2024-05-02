@@ -67,8 +67,9 @@ process profile_taxa {
 // Channel.fromPath( params.chocophlan, type: 'dir', checkIfExists: true ).set { chocophlan_databases }
 // Channel.fromPath( params.uniref, type: 'dir', checkIfExists: true ).set { uniref_databases }
 
-process profile_function {
+process profile_function_n1 {
 
+  label 'humann'
   tag "$name"
 
   //Enable multicontainer settings
@@ -94,6 +95,255 @@ process profile_function {
   name = task.ext.name ?: "${meta.id}"
   run = task.ext.run ?: "${meta.run}"
   """
+  diamond --version
+  head -n 3 ${metaphlan_bug_list}
+  ls -lhtr ${metaphlan_bug_list}
+  #HUMAnN will use the list of species detected by the profile_taxa process
+  humann \\
+    --input $reads \\
+    --output . \\
+    --output-basename ${name} \\
+    --taxonomic-profile ${metaphlan_bug_list} \\
+    --nucleotide-database ${params.chocophlan} \\
+    --protein-database ${params.uniref} \\
+    --pathways metacyc \\
+    --threads 1 \\
+    --memory-use minimum &> ${name}_HUMAnN.log
+
+  # MultiQC doesn't have a module for humann yet. As a consequence, I
+  # had to create a YAML file with all the info I need via a bash script
+  bash scrape_profile_functions.sh ${name} ${name}_HUMAnN.log > profile_functions_mqc.yaml
+  """
+}
+
+
+process profile_function_n7 {
+  label 'humann'
+  tag "$name"
+
+  //Enable multicontainer settings
+  container params.docker_container_humann3
+
+  publishDir {"${params.outdir}/${params.project}/${run}/function" }, mode: 'copy', pattern: "*.{tsv,log}"
+
+  input:
+  tuple val(meta), path(reads)
+  tuple val(meta), path(metaphlan_bug_list)
+
+  output:
+  tuple val(meta), path("*_HUMAnN.log")
+  tuple val(meta), path("*_genefamilies.tsv"), emit: profile_function_gf
+  tuple val(meta), path("*_pathcoverage.tsv"), emit: profile_function_pc
+  tuple val(meta), path("*_pathabundance.tsv"), emit: profile_function_pa
+  tuple val(meta), path("profile_functions_mqc.yaml"), emit: profile_function_log
+
+  when:
+  params.annotation
+
+  script:
+  name = task.ext.name ?: "${meta.id}"
+  run = task.ext.run ?: "${meta.run}"
+  """
+  diamond --version
+  head -n 3 ${metaphlan_bug_list}
+  ls -lhtr ${metaphlan_bug_list}
+  #HUMAnN will use the list of species detected by the profile_taxa process
+  humann \\
+    --input $reads \\
+    --output . \\
+    --output-basename ${name} \\
+    --taxonomic-profile ${metaphlan_bug_list} \\
+    --nucleotide-database ${params.chocophlan} \\
+    --protein-database ${params.uniref} \\
+    --pathways metacyc \\
+    --threads 7 \\
+    --memory-use minimum &> ${name}_HUMAnN.log
+
+  # MultiQC doesn't have a module for humann yet. As a consequence, I
+  # had to create a YAML file with all the info I need via a bash script
+  bash scrape_profile_functions.sh ${name} ${name}_HUMAnN.log > profile_functions_mqc.yaml
+  """
+}
+
+
+process profile_function_localdb {
+
+  label 'humann'
+  tag "$name"
+
+  //Enable multicontainer settings
+  container params.docker_container_humann3
+
+  publishDir {"${params.outdir}/${params.project}/${run}/function" }, mode: 'copy', pattern: "*.{tsv,log}"
+
+  input:
+  tuple val(meta), path(reads)
+  tuple val(meta), path(metaphlan_bug_list)
+
+  output:
+  tuple val(meta), path("*_HUMAnN.log")
+  tuple val(meta), path("*_genefamilies.tsv"), emit: profile_function_gf
+  tuple val(meta), path("*_pathcoverage.tsv"), emit: profile_function_pc
+  tuple val(meta), path("*_pathabundance.tsv"), emit: profile_function_pa
+  tuple val(meta), path("profile_functions_mqc.yaml"), emit: profile_function_log
+
+  when:
+  params.annotation
+
+  script:
+  name = task.ext.name ?: "${meta.id}"
+  run = task.ext.run ?: "${meta.run}"
+  """
+  diamond --version
+  cp -r ${params.uniref} diamonddb
+  head -n 3 ${metaphlan_bug_list}
+  ls -lhtr ${metaphlan_bug_list}
+  #HUMAnN will use the list of species detected by the profile_taxa process
+  humann \\
+    --input $reads \\
+    --output . \\
+    --output-basename ${name} \\
+    --taxonomic-profile ${metaphlan_bug_list} \\
+    --nucleotide-database ${params.chocophlan} \\
+    --protein-database diamonddb \\
+    --pathways metacyc \\
+    --threads 1 \\
+    --memory-use minimum &> ${name}_HUMAnN.log
+
+  # MultiQC doesn't have a module for humann yet. As a consequence, I
+  # had to create a YAML file with all the info I need via a bash script
+  bash scrape_profile_functions.sh ${name} ${name}_HUMAnN.log > profile_functions_mqc.yaml
+  """
+}
+
+process profile_function_n8 {
+
+  label 'humann'
+  tag "$name"
+
+  //Enable multicontainer settings
+  container params.docker_container_humann3
+
+  publishDir {"${params.outdir}/${params.project}/${run}/function" }, mode: 'copy', pattern: "*.{tsv,log}"
+
+  input:
+  tuple val(meta), path(reads)
+  tuple val(meta), path(metaphlan_bug_list)
+
+  output:
+  tuple val(meta), path("*_HUMAnN.log")
+  tuple val(meta), path("*_genefamilies.tsv"), emit: profile_function_gf
+  tuple val(meta), path("*_pathcoverage.tsv"), emit: profile_function_pc
+  tuple val(meta), path("*_pathabundance.tsv"), emit: profile_function_pa
+  tuple val(meta), path("profile_functions_mqc.yaml"), emit: profile_function_log
+
+  when:
+  params.annotation
+
+  script:
+  name = task.ext.name ?: "${meta.id}"
+  run = task.ext.run ?: "${meta.run}"
+  """
+  diamond --version
+  head -n 3 ${metaphlan_bug_list}
+  ls -lhtr ${metaphlan_bug_list}
+  #HUMAnN will use the list of species detected by the profile_taxa process
+  humann \\
+    --input $reads \\
+    --output . \\
+    --output-basename ${name} \\
+    --taxonomic-profile ${metaphlan_bug_list} \\
+    --nucleotide-database ${params.chocophlan} \\
+    --protein-database ${params.uniref} \\
+    --pathways metacyc \\
+    --threads 8 \\
+    --memory-use minimum &> ${name}_HUMAnN.log
+
+  # MultiQC doesn't have a module for humann yet. As a consequence, I
+  # had to create a YAML file with all the info I need via a bash script
+  bash scrape_profile_functions.sh ${name} ${name}_HUMAnN.log > profile_functions_mqc.yaml
+  """
+}
+
+process profile_function_uf90 {
+
+  label 'humann'
+  tag "$name"
+
+  //Enable multicontainer settings
+  container params.docker_container_humann3
+
+  publishDir {"${params.outdir}/${params.project}/${run}/function" }, mode: 'copy', pattern: "*.{tsv,log}"
+
+  input:
+  tuple val(meta), path(reads)
+  tuple val(meta), path(metaphlan_bug_list)
+
+  output:
+  tuple val(meta), path("*_HUMAnN.log")
+  tuple val(meta), path("*_genefamilies.tsv"), emit: profile_function_gf
+  tuple val(meta), path("*_pathcoverage.tsv"), emit: profile_function_pc
+  tuple val(meta), path("*_pathabundance.tsv"), emit: profile_function_pa
+  tuple val(meta), path("profile_functions_mqc.yaml"), emit: profile_function_log
+
+  when:
+  params.annotation
+
+  script:
+  name = task.ext.name ?: "${meta.id}"
+  run = task.ext.run ?: "${meta.run}"
+  """
+  diamond --version
+  head -n 3 ${metaphlan_bug_list}
+  ls -lhtr ${metaphlan_bug_list}
+  #HUMAnN will use the list of species detected by the profile_taxa process
+  humann \\
+    --input $reads \\
+    --output . \\
+    --output-basename ${name} \\
+    --taxonomic-profile ${metaphlan_bug_list} \\
+    --nucleotide-database ${params.chocophlan} \\
+    --protein-database ${params.uniref2} \\
+    --pathways metacyc \\
+    --threads 8 \\
+    --memory-use minimum &> ${name}_HUMAnN.log
+
+  # MultiQC doesn't have a module for humann yet. As a consequence, I
+  # had to create a YAML file with all the info I need via a bash script
+  bash scrape_profile_functions.sh ${name} ${name}_HUMAnN.log > profile_functions_mqc.yaml
+  """
+}
+
+
+process profile_function_h39 {
+
+  label 'humann'
+  tag "$name"
+
+  //Enable multicontainer settings
+  container params.docker_container_humann39
+
+  publishDir {"${params.outdir}/${params.project}/${run}/function" }, mode: 'copy', pattern: "*.{tsv,log}"
+
+  input:
+  tuple val(meta), path(reads)
+  tuple val(meta), path(metaphlan_bug_list)
+
+  output:
+  tuple val(meta), path("*_HUMAnN.log")
+  tuple val(meta), path("*_genefamilies.tsv"), emit: profile_function_gf
+  tuple val(meta), path("*_pathcoverage.tsv"), emit: profile_function_pc
+  tuple val(meta), path("*_pathabundance.tsv"), emit: profile_function_pa
+  tuple val(meta), path("profile_functions_mqc.yaml"), emit: profile_function_log
+
+  when:
+  params.annotation
+
+  script:
+  name = task.ext.name ?: "${meta.id}"
+  run = task.ext.run ?: "${meta.run}"
+  """
+  diamond --version
   head -n 3 ${metaphlan_bug_list}
   ls -lhtr ${metaphlan_bug_list}
   #HUMAnN will use the list of species detected by the profile_taxa process
@@ -114,6 +364,154 @@ process profile_function {
   """
 }
 
+process profile_function_h37 {
+
+  label 'humann'
+  tag "$name"
+
+  //Enable multicontainer settings
+  container params.docker_container_humann37
+
+  publishDir {"${params.outdir}/${params.project}/${run}/function" }, mode: 'copy', pattern: "*.{tsv,log}"
+
+  input:
+  tuple val(meta), path(reads)
+  tuple val(meta), path(metaphlan_bug_list)
+
+  output:
+  tuple val(meta), path("*_HUMAnN.log")
+  tuple val(meta), path("*_genefamilies.tsv"), emit: profile_function_gf
+  tuple val(meta), path("*_pathcoverage.tsv"), emit: profile_function_pc
+  tuple val(meta), path("*_pathabundance.tsv"), emit: profile_function_pa
+  tuple val(meta), path("profile_functions_mqc.yaml"), emit: profile_function_log
+
+  when:
+  params.annotation
+
+  script:
+  name = task.ext.name ?: "${meta.id}"
+  run = task.ext.run ?: "${meta.run}"
+  """
+  diamond --version
+  head -n 3 ${metaphlan_bug_list}
+  ls -lhtr ${metaphlan_bug_list}
+  #HUMAnN will use the list of species detected by the profile_taxa process
+  humann \\
+    --input $reads \\
+    --output . \\
+    --output-basename ${name} \\
+    --taxonomic-profile ${metaphlan_bug_list} \\
+    --nucleotide-database ${params.chocophlan} \\
+    --protein-database ${params.uniref} \\
+    --pathways metacyc \\
+    --threads ${task.cpus} \\
+    --memory-use minimum &> ${name}_HUMAnN.log
+
+  # MultiQC doesn't have a module for humann yet. As a consequence, I
+  # had to create a YAML file with all the info I need via a bash script
+  bash scrape_profile_functions.sh ${name} ${name}_HUMAnN.log > profile_functions_mqc.yaml
+  """
+}
+
+
+process profile_function_h361 {
+
+  label 'humann'
+  tag "$name"
+
+  //Enable multicontainer settings
+  container params.docker_container_humann361
+
+  publishDir {"${params.outdir}/${params.project}/${run}/function" }, mode: 'copy', pattern: "*.{tsv,log}"
+
+  input:
+  tuple val(meta), path(reads)
+  tuple val(meta), path(metaphlan_bug_list)
+
+  output:
+  tuple val(meta), path("*_HUMAnN.log")
+  tuple val(meta), path("*_genefamilies.tsv"), emit: profile_function_gf
+  tuple val(meta), path("*_pathcoverage.tsv"), emit: profile_function_pc
+  tuple val(meta), path("*_pathabundance.tsv"), emit: profile_function_pa
+  tuple val(meta), path("profile_functions_mqc.yaml"), emit: profile_function_log
+
+  when:
+  params.annotation
+
+  script:
+  name = task.ext.name ?: "${meta.id}"
+  run = task.ext.run ?: "${meta.run}"
+  """
+  diamond --version
+  head -n 3 ${metaphlan_bug_list}
+  ls -lhtr ${metaphlan_bug_list}
+  #HUMAnN will use the list of species detected by the profile_taxa process
+  humann \\
+    --input $reads \\
+    --output . \\
+    --output-basename ${name} \\
+    --taxonomic-profile ${metaphlan_bug_list} \\
+    --nucleotide-database ${params.chocophlan} \\
+    --protein-database ${params.uniref} \\
+    --pathways metacyc \\
+    --threads ${task.cpus} \\
+    --memory-use minimum &> ${name}_HUMAnN.log
+
+  # MultiQC doesn't have a module for humann yet. As a consequence, I
+  # had to create a YAML file with all the info I need via a bash script
+  bash scrape_profile_functions.sh ${name} ${name}_HUMAnN.log > profile_functions_mqc.yaml
+  """
+}
+
+
+process profile_function_conda {
+
+  label 'humann'
+  tag "$name"
+
+  //Enable multicontainer settings
+  conda '/dbs/metagenometest/metagenome-dbs/envs/humann38'
+
+  publishDir {"${params.outdir}/${params.project}/${run}/function" }, mode: 'copy', pattern: "*.{tsv,log}"
+
+  input:
+  tuple val(meta), path(reads)
+  tuple val(meta), path(metaphlan_bug_list)
+
+  output:
+  tuple val(meta), path("*_HUMAnN.log")
+  tuple val(meta), path("*_genefamilies.tsv"), emit: profile_function_gf
+  tuple val(meta), path("*_pathcoverage.tsv"), emit: profile_function_pc
+  tuple val(meta), path("*_pathabundance.tsv"), emit: profile_function_pa
+  tuple val(meta), path("profile_functions_mqc.yaml"), emit: profile_function_log
+
+  when:
+  params.annotation
+
+  script:
+  name = task.ext.name ?: "${meta.id}"
+  run = task.ext.run ?: "${meta.run}"
+  """
+  diamond --version
+  head -n 3 ${metaphlan_bug_list}
+  ls -lhtr ${metaphlan_bug_list}
+  #HUMAnN will use the list of species detected by the profile_taxa process
+  humann \\
+    --input $reads \\
+    --output . \\
+    --output-basename ${name} \\
+    --taxonomic-profile ${metaphlan_bug_list} \\
+    --nucleotide-database ${params.chocophlan} \\
+    --protein-database ${params.uniref} \\
+    --pathways metacyc \\
+    --threads ${task.cpus} \\
+    --memory-use minimum &> ${name}_HUMAnN.log
+
+  # MultiQC doesn't have a module for humann yet. As a consequence, I
+  # had to create a YAML file with all the info I need via a bash script
+  bash scrape_profile_functions.sh ${name} ${name}_HUMAnN.log > profile_functions_mqc.yaml
+  """
+}
 
 process combine_humann_tables {
   tag "$run"
