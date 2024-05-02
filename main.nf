@@ -2,7 +2,7 @@
 
 nextflow.enable.dsl=2
 
-include { profile_taxa; profile_function; combine_humann_tables; combine_metaphlan_tables } from './modules/community_characterisation'
+include { profile_taxa;   profile_function_n1;  profile_function_n7;  profile_function_uf90;  profile_function_h39;  profile_function_n8;  process profile_function_localdb;   profile_function_h37;   profile_function_h361; combine_humann_tables; combine_metaphlan_tables } from './modules/community_characterisation'
 include { merge_paired_end_cleaned; get_software_versions; cat_fastqs} from './modules/house_keeping'
 include { samplesheetToList           } from 'plugin/nf-schema'
 
