@@ -11,7 +11,7 @@
 // Channel.fromPath( params.metaphlan_databases, type: 'dir', checkIfExists: true ).set { bowtie2_metaphlan_databases }
 
 process profile_taxa {
-
+  label 'metaphlan'
   tag "$name"
 
   //Enable multicontainer settings
@@ -60,7 +60,7 @@ process profile_taxa {
 
 
 process profile_taxa_m4 {
-
+  label 'metaphlan'
   tag "$name"
 
   //Enable multicontainer settings
@@ -84,14 +84,14 @@ process profile_taxa_m4 {
   name = task.ext.name ?: "${meta.id}"
   run = task.ext.run ?: "${meta.run}"
   """
-  echo ${params.metaphlan_db}
+  echo ${params.metaphlan4_db}
 
   metaphlan \\
     --input_type fastq \\
     --tmp_dir . \\
     --biom ${name}.biom \\
     --index ${params.metaphlan_index} \\
-    --bowtie2db ${params.metaphlan_db} \\
+    --bowtie2db ${params.metaphlan4_db} \\
     --bt2_ps ${params.bt2options} \\
     --add_viruses \\
     --sample_id ${name} \\
