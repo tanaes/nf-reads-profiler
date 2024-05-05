@@ -17,7 +17,7 @@ process profile_taxa {
   //Enable multicontainer settings
   container params.docker_container_metaphlan
 
-  publishDir "${params.outdir}/${params.project}/${run}/taxa", mode: 'copy', pattern: "*.{biom,tsv,txt,bz2}"
+  publishDir "${params.outdir}/${params.project}/${run}/taxa/vOct22", mode: 'copy', pattern: "*.{biom,tsv,txt,bz2}"
 
   input:
   tuple val(meta), path(reads)
@@ -66,7 +66,7 @@ process profile_taxa_m4 {
   //Enable multicontainer settings
   container params.docker_container_metaphlan
 
-  publishDir "${params.outdir}/${params.project}/${run}/taxa", mode: 'copy', pattern: "*.{biom,tsv,txt,bz2}"
+  publishDir "${params.outdir}/${params.project}/${run}/taxa/vJun23", mode: 'copy', pattern: "*.{biom,tsv,txt,bz2}"
 
   input:
   tuple val(meta), path(reads)
