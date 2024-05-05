@@ -226,7 +226,7 @@ workflow {
 
   // profile function
   // profile_function_conda_h39(merged_reads, profile_taxa_m4.out.to_profile_function_bugs)
-  profile_function_conda_dmnd(merged_reads, profile_taxa.out.to_profile_function_bugs)
+  // profile_function_conda_dmnd(merged_reads, profile_taxa.out.to_profile_function_bugs)
   // profile_taxa.out.view()
 
   // // regroup metadata

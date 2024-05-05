@@ -90,7 +90,7 @@ process profile_taxa_m4 {
     --input_type fastq \\
     --tmp_dir . \\
     --biom ${name}.biom \\
-    --index ${params.metaphlan_index} \\
+    --index ${params.metaphlan4_index} \\
     --bowtie2db ${params.metaphlan4_db} \\
     --bt2_ps ${params.bt2options} \\
     --add_viruses \\
