@@ -2,7 +2,7 @@
 
 nextflow.enable.dsl=2
 
-include { profile_taxa;   profile_function_n1;  profile_function_n7;  profile_function_uf90;  profile_function_h39;  profile_function_n8;  profile_function_localdb;   profile_function_h37;   profile_function_h361; combine_humann_tables; combine_metaphlan_tables } from './modules/community_characterisation'
+include { profile_taxa;   profile_taxa_m4;  profile_function_conda_h39; profile_function_conda_dmnd;  profile_function_n1;  profile_function_n7;  profile_function_uf90;  profile_function_h39;  profile_function_n8;  profile_function_localdb;   profile_function_h37;   profile_function_h361; combine_humann_tables; combine_metaphlan_tables } from './modules/community_characterisation'
 include { merge_paired_end_cleaned; get_software_versions; cat_fastqs} from './modules/house_keeping'
 include { samplesheetToList           } from 'plugin/nf-schema'
 
@@ -203,28 +203,30 @@ workflow {
   // profile taxa
   profile_taxa(merged_reads)
 
-  // profile function
-  profile_function_n1(merged_reads, profile_taxa.out.to_profile_function_bugs)
-  // profile function
-  profile_function_n7(merged_reads, profile_taxa.out.to_profile_function_bugs)
+  profile_taxa_m4(merged_reads)
 
-  profile_function_uf90(merged_reads, profile_taxa.out.to_profile_function_bugs)
+  // // profile function
+  // profile_function_n1(merged_reads, profile_taxa.out.to_profile_function_bugs)
+  // // profile function
+  // profile_function_n7(merged_reads, profile_taxa.out.to_profile_function_bugs)
 
-  profile_function_h39(merged_reads, profile_taxa.out.to_profile_function_bugs)
+  // profile_function_uf90(merged_reads, profile_taxa.out.to_profile_function_bugs)
+
+  profile_function_h39(merged_reads, profile_taxa_m4.out.to_profile_function_bugs)
   // profile function
   profile_function_n8(merged_reads, profile_taxa.out.to_profile_function_bugs)
-  // profile function
-  profile_function_localdb(merged_reads, profile_taxa.out.to_profile_function_bugs)
+  // // profile function
+  // profile_function_localdb(merged_reads, profile_taxa.out.to_profile_function_bugs)
+
+  // // profile function
+  // profile_function_h37(merged_reads, profile_taxa.out.to_profile_function_bugs)
+
+  // // profile function
+  // profile_function_h361(merged_reads, profile_taxa.out.to_profile_function_bugs)
 
   // profile function
-  profile_function_h37(merged_reads, profile_taxa.out.to_profile_function_bugs)
-
-  // profile function
-  profile_function_h361(merged_reads, profile_taxa.out.to_profile_function_bugs)
-
-  // profile function
-  // profile_function_conda(merged_reads, profile_taxa.out.to_profile_function_bugs)
-
+  // profile_function_conda_h39(merged_reads, profile_taxa_m4.out.to_profile_function_bugs)
+  profile_function_conda_dmnd(merged_reads, profile_taxa.out.to_profile_function_bugs)
   // profile_taxa.out.view()
 
   // // regroup metadata
